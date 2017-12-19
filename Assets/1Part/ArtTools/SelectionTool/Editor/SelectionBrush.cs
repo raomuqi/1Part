@@ -5,10 +5,10 @@ using UnityEditor;
 
 public class SelectionBrush : EditorWindow {
 
-	[MenuItem("工具/笔刷选择工具")]
+	[MenuItem("JackRao/Brush Selection")]
     static void ShowBrushWindow()
     {
-        var window = EditorWindow.GetWindow<SelectionBrush>(false, "笔刷选择工具");
+        var window = EditorWindow.GetWindow<SelectionBrush>(false, "Brush Selection");
         window.Show();
     }
 

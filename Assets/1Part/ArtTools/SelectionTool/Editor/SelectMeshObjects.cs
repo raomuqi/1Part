@@ -9,7 +9,7 @@ public class SelectMeshObjects : ScriptableWizard {
     [Header("半径")] public float radius = 5;
     private List<GameObject> selections = new List<GameObject>();
     private ShowAidInScene aidObject;
-    [MenuItem("工具/选择多个静态物体")]
+    [MenuItem("JackRao/Select GameObjects")]
     static void DisplayInfo()
     {
         ScriptableWizard.DisplayWizard("选择一定范围内所有带MeshRender组件的静态物体", typeof(SelectMeshObjects), "关闭", "搜索");
