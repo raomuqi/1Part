@@ -5,15 +5,10 @@ using UnityEditor;
 /************************************
  * 作者：饶牧旗(TA)   时间：2017年11月
  ***********************************/
-[CustomEditor(typeof(SceneMeasure))]
-public class SceneMeasureEditor : Editor
+public class SceneMeasureEditor : ScriptableWizard
 {
-    SceneMeasure measure;
-    GameObject measureGO;
 
-    string tips = "正在使用测量工具...\n" +
-        "鼠标<color=red>右键双击</color>打点\n" +
-        "欢迎任何建议---饶牧旗";
+    string tips = "欢迎任何反馈---饶牧旗_TA";
     GUIStyle labelStype;
 
     int linePoint = 0;
@@ -22,10 +17,27 @@ public class SceneMeasureEditor : Editor
 
     List<MeshCollider> meshColliders = new List<MeshCollider>();
 
+    [MenuItem("JackRao/Measure Tool")]
+    static void MeasureWindow()
+    {
+        ScriptableWizard.DisplayWizard("Scene Measure Tool", typeof(SceneMeasureEditor), "Close", "Clear");
+    }
+
+    /// <summary>
+    /// When press "Cancel" button
+    /// </summary>
+    private void OnWizardCreate() { }
+
+    private void OnWizardOtherButton() { points.Clear(); }
+
+    private void OnWizardUpdate()
+    {
+        helpString = "欢迎任何反馈---饶牧旗_TA";
+        errorString = "正在使用测量工具";
+    }
+
     private void OnEnable()
     {
-        measure = target as SceneMeasure;
-        measureGO = measure.gameObject;
         GenerateStyle();
 
         // Add mesh collider
@@ -37,22 +49,14 @@ public class SceneMeasureEditor : Editor
                 meshColliders.Add(meshFilters[i].gameObject.AddComponent<MeshCollider>());
             }
         }
+
+        SceneView.onSceneGUIDelegate += OnSceneGUI;
     }
 
-    public override void OnInspectorGUI()
+    public void OnSceneGUI(SceneView sceneView)
     {
-        EditorGUILayout.Space();
-        EditorGUILayout.HelpBox("Welcome any suggestion -------- Jack Rao(TA)", MessageType.Error);
-    }
-
-    public void OnSceneGUI()
-    {
-
-        Handles.Label(measureGO.transform.position, tips, labelStype);
-
         SceneRaycast();
         ShowPoints();
-
     }
 
     void SceneRaycast()
@@ -90,7 +94,7 @@ public class SceneMeasureEditor : Editor
             Handles.color = Color.yellow;
             // Draw sphere
             Handles.SphereHandleCap(0, points[i], Quaternion.identity, handleSize, EventType.repaint);
-        
+
         }
     }
 
@@ -114,5 +118,6 @@ public class SceneMeasureEditor : Editor
             DestroyImmediate(meshColliders[i]);
         }
         meshColliders.Clear();
+        SceneView.onSceneGUIDelegate -= OnSceneGUI;
     }
 }
