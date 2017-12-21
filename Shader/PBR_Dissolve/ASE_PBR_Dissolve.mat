@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: ASE_PBR_Dissolve
+  m_Shader: {fileID: 4800000, guid: 982a86ee68366c54bb09076cf9f9c6d1, type: 3}
+  m_ShaderKeywords: _KEYWORD0_ON _NOISEORVERTICAL_ON _STATICSWITCH_ON _TOGGLESWITCH0_ON
+  m_LightmapFlags: 0
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo:
+        m_Texture: {fileID: 2800000, guid: f2f05e5ef2fd39d4d811761a1ea79b51, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AmbientOcclusion:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Emission:
+        m_Texture: {fileID: 2800000, guid: f2f05e5ef2fd39d4d811761a1ea79b51, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicRSmoothnessA:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 2800000, guid: d18ef07175e024449a85e5e34b48d5cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Ramp:
+        m_Texture: {fileID: 2800000, guid: ea278dc563738b144a87b8d7e4c3a474, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture0:
+        m_Texture: {fileID: 2800000, guid: d18ef07175e024449a85e5e34b48d5cf, type: 3}
+        m_Scale: {x: 8, y: 8}
+        m_Offset: {x: 0, y: 0}
+    - _noise:
+        m_Texture: {fileID: 2800000, guid: d18ef07175e024449a85e5e34b48d5cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BottomDef: -1.51
+    - _Cutoff: 0.51
+    - _DefBottom: 1.07
+    - _DefTop: -1.51
+    - _Dissolve: 0.654
+    - _DissolveBottom: -1.51
+    - _DissolveIntensity: 0.471
+    - _DissolveProgress: 0
+    - _DissolveRes: 0.01
+    - _DissolveTop: 1.07
+    - _EmissionIntensity: 0.6
+    - _Float0: -9.2036584e-10
+    - _Float1: 0.08235294
+    - _Float2: 0.06
+    - _Float3: 0.2
+    - _Keyword0: 1
+    - _MaskClipValue: 0.51
+    - _NoiseOrVertical: 1
+    - _On: 0
+    - _Resolution: 0.0001
+    - _Smoothness: 0
+    - _StaticSwitch: 1
+    - _ToggleSwitch0: 1
+    - _TopDef: 1.07
+    - __dirty: 0
+    - _inputMax: 1
+    - _inputMin: -9.9
+    m_Colors:
+    - _AlbedoColor: {r: 0, g: 0, b: 0, a: 1}
+    - _DissolveColor: {r: 0.32352912, g: 1, b: 0.8600406, a: 1}
