@@ -10,6 +10,10 @@ public class SelectionBrush : ScriptableWizard
     Vector3 up = Vector3.up;
     [SerializeField, Range(0, 10)] float radius = 1f;
 
+    // Filter  TODO:Current
+    [SerializeField, Header("Filter")] bool staticMesh;
+    [SerializeField]bool dynamicMesh;
+
     Ray mouseRay;
 
     private MeshRenderer[] allMeshs;
@@ -25,9 +29,9 @@ public class SelectionBrush : ScriptableWizard
 
     private void OnEnable()
     {
+        Init();
         SceneView.onSceneGUIDelegate += OnSceneView;
-        allMeshs = FindObjectsOfType<MeshRenderer>();
-        Debug.Log(allMeshs.Length);
+        //Debug.Log(allMeshs.Length);
     }
 
     private void OnDisable()
@@ -38,7 +42,11 @@ public class SelectionBrush : ScriptableWizard
 
     private void OnSceneView(SceneView sceneView)
     {
-        mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+        float handleSize = HandleUtility.GetHandleSize(center) * radius;
+        Vector2 mousePos = Event.current.mousePosition;
+        float screenRadius = radius * 100;      // Screen size
+
+        mouseRay = HandleUtility.GUIPointToWorldRay(mousePos);
         center = mouseRay.origin + mouseRay.direction;
         up = Camera.current.transform.forward;
 
@@ -54,10 +62,14 @@ public class SelectionBrush : ScriptableWizard
             for (int i = 0; i < allMeshs.Length; i++)
             {
                 // Encapsulation completely
-                float disMin = Vector3.Distance(allMeshs[i].bounds.min, center);
-                float disMax = Vector3.Distance(allMeshs[i].bounds.max, center);
+                Vector2 boundMin = HandleUtility.WorldToGUIPoint(allMeshs[i].bounds.min);
+                Vector2 boundMax = HandleUtility.WorldToGUIPoint(allMeshs[i].bounds.max);
+                float disMin = Vector2.Distance(boundMin, mousePos);
+                float disMax = Vector2.Distance(boundMax, mousePos);
+                //Debug.Log("DisMin: " + disMin + " DisMax: " + disMax + " Radius: " + radius);
+
                 GameObject go = allMeshs[i].gameObject;
-                if (disMin < radius && disMax < radius && !Event.current.alt)
+                if (disMin < screenRadius && disMax < screenRadius && !Event.current.alt)
                 {
                     SafeAdd(go);
 
@@ -69,43 +81,26 @@ public class SelectionBrush : ScriptableWizard
                     //Debug.Log(go.transform.position + go.name + pos);
                 }
             }
+            Selection.objects = selections.ToArray();
         }
 
         // Selection
-        Selection.objects = selections.ToArray();
+        if (Event.current.type == EventType.MouseUp)
+        {
+        }
 
-        float size = HandleUtility.GetHandleSize(center) * radius;
         // Gizmos
         Handles.color = new Color(0, 1, 0, 0.2f);
-        Handles.DrawSolidDisc(center, up, size);
+        Handles.DrawSolidDisc(center, up, handleSize);
         Handles.color = new Color(1, 1, 0, 1f);
-        Handles.DrawWireDisc(center, up, size);
+        Handles.DrawWireDisc(center, up, handleSize);
 
         sceneView.Repaint();
-        Debug.Log(size);
-    }
-
-    bool SceneRaycast()
-    {
-        //Ray ray = Camera.current.ScreenPointToRay(Input.mousePosition);   not work
-
-        RaycastHit hit;
-        if (Physics.Raycast(mouseRay, out hit))
-        {
-            //pos = hit.point;
-
-            //up = hit.normal;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     void SafeAdd(GameObject args)
     {
-        if (!selections.Contains(args))
+        if (!selections.Contains(args) && args.isStatic)
         {
             selections.Add(args);
         }
@@ -117,5 +112,11 @@ public class SelectionBrush : ScriptableWizard
         {
             selections.Remove(args);
         }
+    }
+
+    void Init()
+    {
+        allMeshs = FindObjectsOfType<MeshRenderer>();
+        helpString = "Select Static Mesh......";
     }
 }
