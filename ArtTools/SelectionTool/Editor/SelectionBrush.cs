@@ -11,18 +11,19 @@ public class SelectionBrush : ScriptableWizard
     [SerializeField, Range(0, 10)] float radius = 1f;
 
     // Filter  TODO:Current
-    [SerializeField, Header("Filter")] bool staticMesh;
-    [SerializeField]bool dynamicMesh;
+    [SerializeField, Header("Filter")] bool bStatic = true;
+    [SerializeField] bool bDynamic;
+    bool bStatusFold;
 
     Ray mouseRay;
 
     private MeshRenderer[] allMeshs;
     private List<GameObject> selections = new List<GameObject>();
 
-    [MenuItem("JackRao/Brush Selection")]
+    [MenuItem("JackRao/Mesh Selection Brush")]
     static void ShowBrushWindow()
     {
-        ScriptableWizard.DisplayWizard("Brush Selection", typeof(SelectionBrush), "Close");
+        ScriptableWizard.DisplayWizard("Mesh Selection", typeof(SelectionBrush), "Close");
     }
 
     private void OnWizardCreate() { }
@@ -100,7 +101,8 @@ public class SelectionBrush : ScriptableWizard
 
     void SafeAdd(GameObject args)
     {
-        if (!selections.Contains(args) && args.isStatic)
+        bool bFilter = (bStatic && args.isStatic) || (bDynamic && !args.isStatic);
+        if (!selections.Contains(args) && bFilter)
         {
             selections.Add(args);
         }
@@ -118,5 +120,28 @@ public class SelectionBrush : ScriptableWizard
     {
         allMeshs = FindObjectsOfType<MeshRenderer>();
         helpString = "Select Static Mesh......";
+    }
+
+    private void OnGUI()
+    {
+        EditorGUILayout.BeginVertical("textArea");
+        EditorGUILayout.LabelField("Select static or dynamic mesh using brush tool");
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.Space();
+
+        radius = EditorGUILayout.Slider("Radius of brush", radius, 0, 10);
+
+        bStatusFold = EditorGUILayout.Foldout(bStatusFold, "Mesh filter");
+        if (bStatusFold)
+        {
+            EditorGUILayout.BeginHorizontal("box");
+            EditorGUIUtility.labelWidth = 40;
+            bStatic = EditorGUILayout.Toggle("Static", bStatic);
+            EditorGUIUtility.labelWidth = 60;
+            bDynamic = EditorGUILayout.Toggle("Dynamic", bDynamic);
+            EditorGUILayout.EndHorizontal();
+        }
+
     }
 }
