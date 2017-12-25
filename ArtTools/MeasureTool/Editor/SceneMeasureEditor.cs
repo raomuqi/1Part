@@ -13,6 +13,10 @@ public class SceneMeasureEditor : ScriptableWizard
 
     int linePoint = 0;
     List<Vector3> points = new List<Vector3>();
+    List<int> controlIDs = new List<int>();
+    int curID;
+
+    [SerializeField, Range(0, 1)] float pointScale = 0.1f;
     float handleSize;
 
     List<MeshCollider> meshColliders = new List<MeshCollider>();
@@ -33,7 +37,7 @@ public class SceneMeasureEditor : ScriptableWizard
     private void OnWizardUpdate()
     {
         helpString = "欢迎任何反馈---饶牧旗_TA";
-        errorString = "正在使用测量工具";
+        errorString = "正在使用测量工具，在模型上鼠标右键双击";
     }
 
     private void OnEnable()
@@ -57,6 +61,7 @@ public class SceneMeasureEditor : ScriptableWizard
     {
         SceneRaycast();
         ShowPoints();
+
     }
 
     void SceneRaycast()
@@ -70,6 +75,7 @@ public class SceneMeasureEditor : ScriptableWizard
             {
                 linePoint = (linePoint++) % 2;
                 points.Add(hit.point);
+                controlIDs.Add(0);
                 //Debug.Log(hit.transform.name);
             }
         }
@@ -77,9 +83,10 @@ public class SceneMeasureEditor : ScriptableWizard
 
     void ShowPoints()
     {
+
         for (int i = 0; i < points.Count; i++)
         {
-            Handles.color = Color.green;
+            Handles.color = Color.yellow;
             if ((i + 1) % 2 == 0)
             {
                 // Draw line
@@ -88,13 +95,42 @@ public class SceneMeasureEditor : ScriptableWizard
                 Handles.Label((points[i - 1] + points[i]) * 0.5f, dis.ToString("f2") + " m", labelStype);
             }
             // Use constant screen size
-            handleSize = HandleUtility.GetHandleSize(points[i]) * 0.1f;
+            handleSize = HandleUtility.GetHandleSize(points[i]) * pointScale;
             // Use XYZ gizmos postion control
-            points[i] = Handles.PositionHandle(points[i], Quaternion.identity);
-            Handles.color = Color.yellow;
-            // Draw sphere
-            Handles.SphereHandleCap(0, points[i], Quaternion.identity, handleSize, EventType.repaint);
+            points[i] = Handles.FreeMoveHandle(points[i], Quaternion.identity, 1f, Vector3.one * 0.01f, (id, pos, rot, size, eventType) =>
+            {
+                controlIDs[i] = id;
+                Handles.color = Color.green;
+                Handles.SphereHandleCap(id, pos, rot, handleSize, eventType);
+                if (GUIUtility.keyboardControl == id && GUIUtility.keyboardControl != 0)
+                {
+                    curID = id;
+                }
+            });
+            //CustomSphereCap(i, i, points[i], Quaternion.identity, handleSize, EventType.Layout);
+        }
 
+        // Show move gizmos
+        for (int i = 0; i < points.Count; i++)
+        {
+            if (controlIDs[i] == curID)
+            {
+                points[i] = Handles.PositionHandle(points[i], Quaternion.identity);
+                Debug.Log(GUIUtility.keyboardControl);           // Get ContorlID of current handles
+            }
+        }
+
+        HandleUtility.Repaint();    // fast respond modification
+    }
+
+    // TODO: Remove freeMoveHandle to reserve snap
+    void CustomSphereCap(int index, int id, Vector3 pos, Quaternion rot, float size, EventType eventType)
+    {
+        controlIDs[index] = id;
+        Handles.SphereHandleCap(0, pos, rot, size, eventType);
+        if (GUIUtility.keyboardControl == id && GUIUtility.keyboardControl != 0)
+        {
+            curID = id;
         }
     }
 
@@ -102,7 +138,7 @@ public class SceneMeasureEditor : ScriptableWizard
     {
         labelStype = new GUIStyle();
         labelStype.richText = true;
-        labelStype.normal.textColor = Color.yellow;
+        labelStype.normal.textColor = Color.green;
         labelStype.fontStyle = FontStyle.Bold;
         labelStype.fontSize = 16;
         labelStype.alignment = TextAnchor.MiddleCenter;
@@ -111,6 +147,7 @@ public class SceneMeasureEditor : ScriptableWizard
     private void OnDisable()
     {
         points.Clear();
+        controlIDs.Clear();
 
         // Remove mesh collider
         for (int i = 0; i < meshColliders.Count; i++)
