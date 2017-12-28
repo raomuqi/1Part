@@ -6,7 +6,7 @@ using System.Xml;
 using System.IO;
 using System.Xml.Linq;
 
-public class VRModelToggle : ScriptableWizard
+public class VRModelToggle : EditorWindow
 {
     private string mode;
     private string useVR = "useVRInput";
@@ -17,13 +17,13 @@ public class VRModelToggle : ScriptableWizard
     XmlElement node;
     string fullPath;
 
-    [MenuItem("JackRao/VRMode Toggle")]
+    [MenuItem("JackRao/VRMode Toggle", false, 0)]
     static void ShowWindow()
     {
-        ScriptableWizard.DisplayWizard("VR模式切换", typeof(VRModelToggle), "Close");
+        Rect pos = SceneView.lastActiveSceneView.position;
+        pos.x += 10; pos.y += 10; pos.width = 200; pos.height = 115;
+        EditorWindow.GetWindowWithRect(typeof(VRModelToggle), pos, true, "VR模式与普通模式切换");
     }
-
-    private void OnWizardCreate() { }
 
     private void OnEnable()
     {
@@ -77,5 +77,10 @@ public class VRModelToggle : ScriptableWizard
         {
             Debug.LogError("[Setup/Public] node not exist");
         }
+    }
+
+    private void OnDisable()
+    {
+        
     }
 }
