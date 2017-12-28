@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Setup>
+  <Public version="1.0" debug="true" showFPS="true" useVRInput="True" windDir="Left" />
+  <Network minPlayer="1" maxPlayer="8" isOffline="true">
+    <NetworkSetting1 isHost="true" ip="172.16.0.80" port="14568" initWeaponType="RIFLE" initPlayerStyle="Default" />
+    <NetworkSetting2 isHost="false" ip="172.16.1.237" port="14568" initWeaponType="RIFLE" initPlayerStyle="Default" />
+    <NetworkSetting3 isHost="false" ip="172.16.0.6" port="14568" initWeaponType="RIFLE" initPlayerStyle="Default" />
+    <NetworkSetting4 isHost="false" ip="172.16.0.73" port="14568" initWeaponType="RIFLE" initPlayerStyle="Default" />
+    <NetworkSetting5 isHost="false" ip="172.16.1.5" port="14568" initWeaponType="RIFLE" initPlayerStyle="Default" />
+    <!-- 
+		硬件代理设置，负责处理远程硬件调用(音频，震动，风扇...) 
+		ip = 硬件服务器ip，serversPort = 硬件服务器端口，clientPort = 硬件客户端端口(主机与所有客户端)
+		-->
+    <HardwareProxySetting ip="172.16.0.80" serversPort="14569" clientPort="14570" />
+  </Network>
+  <!-- 
+		x,y,z是属于平台偏移,y也用于人物站立点偏移(一般用于自动校准后的偏移)
+	-->
+  <CameraRigOffset>
+    <X>0</X>
+    <Y>0</Y>
+    <Z>0</Z>
+  </CameraRigOffset>
+  <!-- 
+		VR平台参数配置
+		二维码验证: type=0
+		预付款验证: type=1
+	-->
+  <VRPlatformSetting isEnable="false" type="0">
+    <GameID>75</GameID>
+    <IV>1234567890123456</IV>
+    <QRCodeCheckNumberUrl>http://uctest.good321.net/devc/ordc</QRCodeCheckNumberUrl>
+    <QRCodeCheckNumberKey>g00dvr21g00dvr21</QRCodeCheckNumberKey>
+    <QRCodeVerifyUrl>http://uctest.good321.net/devc/start</QRCodeVerifyUrl>
+    <QRCodeVerifyKey>g00dvr21g00dvr21</QRCodeVerifyKey>
+    <AdvancePaymentVerifyUrl>http://uctest.good321.net/devc/yfk</AdvancePaymentVerifyUrl>
+    <AdvancePaymentVerifyKey>9oo6vr2l9oo6vr2l</AdvancePaymentVerifyKey>
+    <LogUrl>http://uctest.good321.net/devc/log</LogUrl>
+    <LogKey>good5r2lgood5r2l</LogKey>
+  </VRPlatformSetting>
+</Setup>
