@@ -9,8 +9,10 @@ using UnityEditor;
 using System.Linq;
 using System.Text;
 
-public class SelectionBrush : EditorWindow
+public class MeshSelection : EditorWindow
 {
+    #region Variable
+
     // Gizmos of brush
     Vector3 center = Vector3.zero;
     Vector3 up = Vector3.up;
@@ -23,7 +25,7 @@ public class SelectionBrush : EditorWindow
     string meshRichTips = "<color=green><b>{0:####.#}</b></color>";
     string[] toolBarStr = { "Brush", "Size" };
     int tbSelect = 1;
-    GUIStyle richTexStyle;
+    GUIStyle keyTextStyle;
 
     // Filter status
     bool bStatic = true;
@@ -31,8 +33,8 @@ public class SelectionBrush : EditorWindow
     bool bStatusFold;
 
     // Filter size
-    Vector2 minMax = new Vector2(0, 1);
-    float maxBoundsSize = 3;
+    Vector2 minMax;
+    float maxBoundsSize, curMin, curMax;
 
     Ray mouseRay;
 
@@ -41,13 +43,15 @@ public class SelectionBrush : EditorWindow
     private int sceneMeshCount, staticCount, dynamicCount;
     private List<GameObject> selections = new List<GameObject>();       // Must define GameOject to show selection
 
+    #endregion
+
     [MenuItem("JackRao/Mesh Selection")]
     static void ShowWindow()
     {
-        var window = GetWindow(typeof(SelectionBrush), false, "Mesh Selection");
+        var window = GetWindow(typeof(MeshSelection), false, "Mesh Selection");
         //args.position = new Rect(500, 20, 500, 200);
-        window.minSize = new Vector2(200, 200);
-        window.maxSize = new Vector2(500, 300);
+        window.minSize = new Vector2(350, 200);
+        window.maxSize = new Vector2(600, 300);
         window.Show();
     }
 
@@ -61,9 +65,12 @@ public class SelectionBrush : EditorWindow
     {
         allMeshs = FindObjectsOfType<MeshRenderer>();
         sceneMeshCount = allMeshs.Length;
-        //meshRichTips = "<color=green><b>{0:###.#}</b></color>";
-        richTexStyle = new GUIStyle();
-        richTexStyle.richText = true;
+
+        GetMaxBoundsSize();
+
+        keyTextStyle = new GUIStyle();
+        keyTextStyle.richText = true;
+        keyTextStyle.alignment = TextAnchor.MiddleCenter;
     }
 
     /// <summary>
@@ -73,7 +80,7 @@ public class SelectionBrush : EditorWindow
     {
         // Label Info
         EditorGUILayout.BeginVertical("textArea");
-        EditorGUILayout.LabelField("Select " + meshTips + " [" + immediateTips + "]", richTexStyle);
+        EditorGUILayout.LabelField("Select " + meshTips + " [" + immediateTips + "]", keyTextStyle);
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
@@ -92,18 +99,18 @@ public class SelectionBrush : EditorWindow
         EditorGUILayout.Space();
         // Button group for operation of selections
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button(new GUIContent("All", "Select all mesh")))
+        if (GUILayout.Button("All"))
         {
             for (int i = 0; i < sceneMeshCount; i++)
             {
                 SafeAdd(allMeshs[i].gameObject);
             }
         }
-        if (GUILayout.Button(new GUIContent("None", "Select nothing")))
+        if (GUILayout.Button("None"))
         {
             selections.Clear();
         }
-        if (GUILayout.Button(new GUIContent("Invert", "Invert selection")))
+        if (GUILayout.Button("Invert"))
         {
             for (int i = 0; i < sceneMeshCount; i++)
             {
@@ -136,13 +143,23 @@ public class SelectionBrush : EditorWindow
             case 1:
                 // Size
                 EditorGUILayout.BeginHorizontal();
-                EditorGUIUtility.labelWidth = 60;
-                EditorGUILayout.PrefixLabel("Range: 0");
-                EditorGUILayout.LabelField(string.Format(meshRichTips, minMax.x), richTexStyle, GUILayout.Width(20));
-                EditorGUILayout.MinMaxSlider(ref minMax.x, ref minMax.y, 0, maxBoundsSize);
-                EditorGUILayout.LabelField(string.Format(meshRichTips, minMax.y), richTexStyle, GUILayout.Width(25));
+                EditorGUIUtility.labelWidth = 50;
+                EditorGUILayout.PrefixLabel("Range:");
+
+                EditorGUI.BeginChangeCheck();
+                float minMaxLabelWidth = 40;
+                curMin = Mathf.Clamp(EditorGUILayout.FloatField(Mathf.Round(curMin), GUILayout.Width(minMaxLabelWidth)), 0, curMax - 1);
+                EditorGUILayout.LabelField(string.Format(meshRichTips, minMax.x), keyTextStyle, GUILayout.Width(minMaxLabelWidth));
+                EditorGUILayout.MinMaxSlider(ref minMax.x, ref minMax.y, curMin, curMax);
+                EditorGUILayout.LabelField(string.Format(meshRichTips, minMax.y), keyTextStyle, GUILayout.Width(minMaxLabelWidth));
                 EditorGUIUtility.labelWidth = .1f;
-                maxBoundsSize = EditorGUILayout.FloatField(maxBoundsSize, GUILayout.Width(30));
+                curMax = Mathf.Clamp(EditorGUILayout.FloatField(Mathf.Round(curMax), GUILayout.Width(minMaxLabelWidth)), curMin + 1, maxBoundsSize);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    minMax.x = minMax.x < curMin ? curMin : minMax.x;
+                    minMax.y = minMax.y > curMax ? curMax : minMax.y;
+                }
+
                 GUI.backgroundColor = Color.green;
                 if (GUILayout.Button("Do it", GUILayout.Width(50)))
                 {
@@ -153,7 +170,9 @@ public class SelectionBrush : EditorWindow
                 immediateTips = "Size Filter";
                 break;
         }
+        EditorGUILayout.Space();
 
+        // Close
         GUILayout.FlexibleSpace();
         GUI.backgroundColor = Color.red;
         if (GUILayout.Button("Close", GUILayout.Height(30)))
@@ -246,15 +265,19 @@ public class SelectionBrush : EditorWindow
     // select GO within range of bounds size
     void AddProperSizeMesh()
     {
+        selections.Clear();
+        float min = minMax.x - 0.1f;    // Ensure object be wrapped
+        float max = minMax.y + 0.1f;    // Ensure object be wrapped
         for (int i = 0; i < sceneMeshCount; i++)
         {
             Vector3 size = allMeshs[i].bounds.size;
-            if (size.x > minMax.x && size.x < minMax.y &&
-                 size.y > minMax.x && size.y < minMax.y &&
-                 size.z > minMax.x && size.z < minMax.y)
+            // as long as one size within range 
+            float maxEdge = Mathf.Max(size.x, Mathf.Max(size.y, size.z));
+            if (maxEdge > min && maxEdge < max)
             {
                 SafeAdd(allMeshs[i].gameObject);
             }
+            //Debug.Log(RichText.Show(size));
         }
     }
 
@@ -294,6 +317,21 @@ public class SelectionBrush : EditorWindow
         {
             meshTips.Append("nothing");
         }
+    }
+
+    void GetMaxBoundsSize()
+    {
+        for (int i = 0; i < sceneMeshCount; i++)
+        {
+            Vector3 size = allMeshs[i].bounds.size;
+            float[] args = new float[3] { size.x, size.y, size.z };
+            foreach (var item in args)
+            {
+                maxBoundsSize = Mathf.Max(maxBoundsSize, item);
+            }
+        }
+        curMax = 3;
+        minMax = new Vector2(0, curMax * 0.5f);
     }
 
     private void OnDestroy()
