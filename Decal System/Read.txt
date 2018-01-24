@@ -1,0 +1,4 @@
+弹孔贴花制作方案：
+1、测试过Particle System，每种贴花几乎只需要一个Draw Call，但对于Light Probe混合容易出现闪烁，且很难处理运动的对象；
+2、替换方案使用Quad Mesh，结合Object Pool，借助Dynamic Batch的优势，可以极大的降低Draw Call。同时，可以比较好的混合light probe，也好处理运动物体。
+但是，当场景中不同种类的贴花混合在一起时，容易造成Dynamic Batch失效，这也导致一种贴花无法合并到一个Draw Call，有点类似NGUI的Depth合并。

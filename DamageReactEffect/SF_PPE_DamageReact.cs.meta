@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: ef9d3c724722ba549af841c882d297d6
+timeCreated: 1504513862
+licenseType: Pro
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - m_material: {fileID: 2100000, guid: f400fc25d0ef6124db059dc7fa1a2791, type: 2}
+  - leftTex: {fileID: 2800000, guid: 338b06c711bd55247827ce181347ab64, type: 3}
+  - rightTex: {fileID: 2800000, guid: 0f9ea66ded7bc5e4785735037eb5f897, type: 3}
+  - upTex: {fileID: 2800000, guid: 4453013b49c158b428217ac02fc54a4f, type: 3}
+  - downTex: {fileID: 2800000, guid: 8ddab103f7c763443af11c12ee83ce91, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

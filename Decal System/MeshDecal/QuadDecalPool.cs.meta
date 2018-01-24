@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 5963300ba27e3d349aa7e74d00ef81a1
+timeCreated: 1510143279
+licenseType: Pro
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - decalMetal: {fileID: 1220537861973568, guid: 85ebbcf920c21164a85cac820dedbd95,
+      type: 2}
+  - decalConcrete: {fileID: 1858581465934286, guid: 05a030b03f814cc46abba29ff1d26c9a,
+      type: 2}
+  - decalWood: {fileID: 1727079803366518, guid: 10121ebc6d63bbc478d77031c2e9ec05,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
